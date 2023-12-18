@@ -46,6 +46,7 @@ contract SupplyChain {
         string description;
     }
 
+
     mapping(uint256 => Product) public products;
     uint256 public nextProductId = 1;
 
@@ -102,5 +103,27 @@ contract SupplyChain {
         require(_productId > 0 && _productId < nextProductId, "Invalid product ID");
         return products[_productId];
     }
+
+    // Person
+    mapping(address => Person) public people;
+    function createPerson(
+        address _userAddress,
+        string memory _name,
+        string memory _occupation,
+        string memory _location
+    ) public {
+        require(people[_userAddress].userAddress == address(0), "User already exists");
+        Person storage newPerson = people[_userAddress];
+        newPerson.userAddress = _userAddress;
+        newPerson.name = _name;
+        newPerson.occupation = _occupation;
+        newPerson.location = _location;
+
+    }
+
+    function getPersonByAddress(address _userAddress) external view returns (Person memory) {
+        return people[_userAddress];
+    }
+  
 
 }
