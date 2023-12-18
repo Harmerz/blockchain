@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-
+const {utils} = require("ethers")
+const { BigNumber } = require('ethers');
 
 describe("SupplyChain", function () {
   let SupplyChain;
@@ -15,7 +16,6 @@ describe("SupplyChain", function () {
     const location = "Cityville";
     await supplyChain.createPerson(userAddress, name, occupation, location);
     const person = await supplyChain.getPersonByAddress(userAddress);
-    console.log(person)
   });
 
 
@@ -25,12 +25,10 @@ it("should add inventory to an existing product", async () => {
     const weight = 100;
     const shipmentId = 123;
 
-    // Add inventory for the first time
-    console.log(userAddress, productId, weight, shipmentId)
     await supplyChain.addInventory(userAddress, productId, weight, shipmentId);
     // Get the user's inventory after the first addition
     const inventoryBefore = await supplyChain.getInventoryByAddressAndProductID(userAddress, productId);
-    console.log(inventoryBefore.productRecords.length)
+
     // Check if the inventory was created correctly
     expect(inventoryBefore.productID).to.equal(productId);
     expect(inventoryBefore.totalWeight).to.equal(weight);
@@ -44,7 +42,6 @@ it("should add inventory to an existing product", async () => {
 
     // Get the user's inventory after the second addition
     const inventoryAfter = await supplyChain.getInventoryByAddressAndProductID(userAddress, productId);
-    console.log(inventoryAfter)
     // Check if the inventory was updated correctly
     expect(inventoryAfter.productID).to.equal(productId);
     expect(inventoryAfter.totalWeight).to.equal(weight + additionalWeight);
@@ -75,5 +72,48 @@ it("should add inventory to an existing product", async () => {
     // Get the user's inventory after adding inventory for a new product
     const newInventory = await supplyChain.getInventoryByAddress(userAddress);
     expect(newInventory.length).to.equal(2);
+  });
+  
+it("should reduction inventory from user", async () => {
+ 
+    const productId = 1;
+    const weight = 100;
+    const shipmentId = 123;
+
+    await supplyChain.addInventory(userAddress, productId, weight, shipmentId);
+    const inventoryBefore = await supplyChain.getInventoryByAddressAndProductID(userAddress, productId);
+    // Check if the inventory was created correctly
+    expect(inventoryBefore.productID).to.equal(productId);
+    expect(inventoryBefore.totalWeight).to.equal(weight);
+    expect(inventoryBefore.productRecords.length).to.equal(1);
+
+    // Add more inventory to the existing product
+    const additionalWeight = 50;
+    const additionalShipmentId = 456;
+
+    await supplyChain.addInventory(userAddress, productId, additionalWeight, additionalShipmentId);
+
+    // Get the user's inventory after the second addition
+    const inventoryAfter = await supplyChain.getInventoryByAddressAndProductID(userAddress, productId);
+    // Check if the inventory was updated correctly
+    expect(inventoryAfter.productID).to.equal(productId);
+    expect(inventoryAfter.totalWeight).to.equal(weight + additionalWeight);
+    expect(inventoryAfter.productRecords.length).to.equal(2);
+    const productRecords = [
+      { shipmentID: 123, weight:5, timestamp: 0 },
+      { shipmentID: 456, weight: 10, timestamp: 0},
+    ];
+    const reduceweight = 15;
+    await supplyChain.reductionInventory(userAddress, productId, reduceweight, productRecords)
+    const hexToDecimal = hex => BigNumber.from(hex).toNumber();
+    const inventoryAfterReduction = await supplyChain.getInventoryByAddressAndProductID(userAddress, productId);
+    expect(inventoryAfterReduction.totalWeight).to.equal(weight + additionalWeight - 15);
+    expect(inventoryAfterReduction.productID).to.equal(productId);
+    expect(inventoryAfterReduction.productRecords.length).to.equal(2);
+
+    expect(inventoryAfterReduction.productRecords.filter(e => hexToDecimal(e.shipmentID) === 123)[0].weight).to.equal(weight - 5);
+    expect(inventoryAfterReduction.productRecords.filter(e => hexToDecimal(e.shipmentID) === 456)[0].weight).to.equal(additionalWeight - 10);
+
+
   });
 });

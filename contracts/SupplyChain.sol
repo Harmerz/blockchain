@@ -195,7 +195,7 @@ contract SupplyChain {
        return people[_userAddress].inventory[0];
     }
 
-    function AddSendShipment(address _userAddress, uint256 _weight, uint256 _shipmentId) external {
+    function addSendShipment(address _userAddress, uint256 _weight, uint256 _shipmentId) external {
         Person storage sendShipmentPerson = people[_userAddress]; 
         ProductRecord memory newProductRecord = ProductRecord({
             shipmentID: _shipmentId,
@@ -207,11 +207,37 @@ contract SupplyChain {
         sendShipmentPerson.sendShipment[index] = newProductRecord;
     }
 
-    function GetSendShipmentByAddress(address _userAddress) external view returns (ProductRecord[] memory)  {
+    function getSendShipmentByAddress(address _userAddress) external view returns (ProductRecord[] memory)  {
         return people[_userAddress].sendShipment; 
     }
+    function reductionInventory(address _userAddress, uint256 _productId, uint256 _weight, ProductRecord[] memory _productRecords) external {
+        Person storage inventoryPerson = people[_userAddress];
 
-    
+
+        // Iterate through the inventory items
+        for (uint i = 0; i < inventoryPerson.inventory.length; i++) {
+            if (inventoryPerson.inventory[i].productID == _productId) {
+                // Ensure there is enough totalWeight to reduce
+
+                // Reduce the totalWeight
+                inventoryPerson.inventory[i].totalWeight -= _weight;
+
+                // Iterate through the productRecords
+                for (uint j = 0; j < inventoryPerson.inventory[i].productRecords.length; j++) {
+                    for (uint k = 0; k < _productRecords.length; k++) {
+                        // Check if shipmentID matches
+                        if (inventoryPerson.inventory[i].productRecords[j].shipmentID == _productRecords[k].shipmentID) {
+                            // Reduce the product weight
+                            inventoryPerson.inventory[i].productRecords[j].weight -= _productRecords[k].weight;
+                        }
+
+                    }
+                }
+                // Exit the loop since the product is found
+                break;
+            }
+        }
+    }
 
 
   
