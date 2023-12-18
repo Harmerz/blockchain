@@ -125,10 +125,8 @@ contract SupplyChain {
         return people[_userAddress];
     }
 
-    event Time(uint256 time);
+    // Inventory
    function addInventory(address _userAddress, uint256 _productId, uint256 _weight, uint256 _shipmentId) external {
-    emit Time(block.timestamp);
-
     bool find = false;
     Person storage inventoryPerson = people[_userAddress];
 
@@ -194,10 +192,28 @@ contract SupplyChain {
             }
         }
        require(find, "Not Found");
+       return people[_userAddress].inventory[0];
     }
 
+    function AddSendShipment(address _userAddress, uint256 _weight, uint256 _shipmentId) external {
+        Person storage sendShipmentPerson = people[_userAddress]; 
+        ProductRecord memory newProductRecord = ProductRecord({
+            shipmentID: _shipmentId,
+            weight: _weight,
+            timestamp: block.timestamp
+        });
+        sendShipmentPerson.sendShipment.push();
+        uint256 index = sendShipmentPerson.sendShipment.length - 1; // Get the index of the last element
+        sendShipmentPerson.sendShipment[index] = newProductRecord;
+    }
+
+    function GetSendShipmentByAddress(address _userAddress) external view returns (ProductRecord[] memory)  {
+        return people[_userAddress].sendShipment; 
+    }
 
     
+
+
   
 
 }
