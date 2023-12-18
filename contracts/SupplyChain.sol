@@ -124,6 +124,80 @@ contract SupplyChain {
     function getPersonByAddress(address _userAddress) external view returns (Person memory) {
         return people[_userAddress];
     }
+
+    event Time(uint256 time);
+   function addInventory(address _userAddress, uint256 _productId, uint256 _weight, uint256 _shipmentId) external {
+    emit Time(block.timestamp);
+
+    bool find = false;
+    Person storage inventoryPerson = people[_userAddress];
+
+    for (uint i = 0; i < inventoryPerson.inventory.length; i++) {
+        if (inventoryPerson.inventory[i].productID == _productId) {
+            // Update the existing product's weight
+            inventoryPerson.inventory[i].totalWeight += _weight;
+
+            // Add a new product record
+            ProductRecord memory newProductRecord = ProductRecord({
+                shipmentID: _shipmentId,
+                weight: _weight,
+                timestamp: block.timestamp
+            });
+            find = true;
+
+            inventoryPerson.inventory[i].productRecords.push(newProductRecord);
+            break;
+        }
+    }
+    if(!find){
+       // Create a new ProductRecord
+        ProductRecord memory newProductRecord = ProductRecord({
+            shipmentID: _shipmentId,
+            weight: _weight,
+            timestamp: block.timestamp
+        });
+
+        // Create a new Inventory with the product record
+        Inventory memory newInventory = Inventory({
+            productID: _productId,
+            totalWeight: _weight,
+            productRecords: new ProductRecord[](1)  // Use a memory array with one element
+        });
+
+        // Add the new product record to the inventory
+        newInventory.productRecords[0] = newProductRecord;
+
+        // Push the newInventory to the person's inventory
+        inventoryPerson.inventory.push(); // Push an empty Inventory struct to the storage array
+        uint256 index = inventoryPerson.inventory.length - 1; // Get the index of the last element
+        inventoryPerson.inventory[index].productID = newInventory.productID; // Copy the productID
+        inventoryPerson.inventory[index].totalWeight = newInventory.totalWeight; // Copy the totalWeight
+        for (uint256 i = 0; i < newInventory.productRecords.length; i++) {
+            inventoryPerson.inventory[index].productRecords.push(newProductRecord); // Copy the productRecords one by one
+        }
+
+    }
+   
+}
+
+
+    function getInventoryByAddress(address _userAddress) external view returns (Inventory[] memory) {
+        return people[_userAddress].inventory;
+    }
+    function getInventoryByAddressAndProductID(address _userAddress, uint256 _productID) external view returns (Inventory memory) {
+        Person storage inventoryPerson = people[_userAddress];
+        bool find = false;
+        for (uint i = 0; i < inventoryPerson.inventory.length; i++) {
+            if (inventoryPerson.inventory[i].productID == _productID) {
+                find = true;
+                return (people[_userAddress].inventory[i]);
+            }
+        }
+       require(find, "Not Found");
+    }
+
+
+    
   
 
 }
