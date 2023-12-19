@@ -31,7 +31,7 @@ contract SupplyChain {
     struct Shipment {
         address fromAddress;
         address toAddress;
-        uint8 shipmentID;
+        uint256 shipmentID;
         uint256 weight;
         uint256 productID;
         ProductRecord[] productRecords;
@@ -48,7 +48,9 @@ contract SupplyChain {
 
 
     mapping(uint256 => Product) public products;
+    mapping(uint256 => Shipment) public shipments;
     uint256 public nextProductId = 1;
+    uint256 public nextShipmentId = 1;
 
     function createProduct(
         uint256 _idBefore,
@@ -226,7 +228,8 @@ contract SupplyChain {
                 for (uint j = 0; j < inventoryPerson.inventory[i].productRecords.length; j++) {
                     for (uint k = 0; k < _productRecords.length; k++) {
                         // Check if shipmentID matches
-                        if (inventoryPerson.inventory[i].productRecords[j].shipmentID == _productRecords[k].shipmentID) {
+                        if (inventoryPerson.inventory[i].productRecords[j].shipmentID == _productRecords[k].shipmentID && 
+                        inventoryPerson.inventory[i].productRecords[j].timestamp == _productRecords[k].timestamp) {
                             // Reduce the product weight
                             inventoryPerson.inventory[i].productRecords[j].weight -= _productRecords[k].weight;
                         }
@@ -237,6 +240,69 @@ contract SupplyChain {
                 break;
             }
         }
+    }
+
+    function sendShipment(address _from, address _to, uint256 _weight, uint256 _productId, ProductRecord[] memory _productRecords) external {
+        Shipment storage newShipment = shipments[nextShipmentId];
+        newShipment.fromAddress = _from;
+        newShipment.toAddress = _to;
+        newShipment.shipmentID = nextShipmentId;
+        newShipment.weight = _weight;
+        newShipment.productID = _productId;
+        for(uint256 i = 0; i < _productRecords.length; i++){
+            newShipment.productRecords.push(_productRecords[i]);
+        }
+        this.addInventory(_to, _productId, _weight, nextShipmentId);
+        this.addSendShipment(_from, _weight, nextShipmentId);
+        this.reductionInventory(_from, _productId, _weight, _productRecords);
+        nextShipmentId++;
+    }
+
+    function addLocalInventory(address _userAddress, uint256 _productId, uint256 _weight, ProductRecord[] memory _productRecords) external {
+        bool find = false;
+    Person storage inventoryPerson = people[_userAddress];
+
+    for (uint i = 0; i < inventoryPerson.inventory.length; i++) {
+        if (inventoryPerson.inventory[i].productID == _productId) {
+            // Update the existing product's weight
+            inventoryPerson.inventory[i].totalWeight += _weight;
+            
+            find = true;
+            for(uint j = 0; j < _productRecords.length; j++){
+                inventoryPerson.inventory[i].productRecords.push(_productRecords[j]);
+            }
+
+            break;
+        }
+    }
+    if(!find){
+
+        // Create a new Inventory with the product record
+        Inventory memory newInventory = Inventory({
+            productID: _productId,
+            totalWeight: _weight,
+            productRecords: _productRecords
+        });
+
+        // Add the new product record to the inventory
+
+        // Push the newInventory to the person's inventory
+        inventoryPerson.inventory.push(); // Push an empty Inventory struct to the storage array
+        uint256 index = inventoryPerson.inventory.length - 1; // Get the index of the last element
+        inventoryPerson.inventory[index].productID = newInventory.productID; // Copy the productID
+        inventoryPerson.inventory[index].totalWeight = newInventory.totalWeight; // Copy the totalWeight
+        for(uint j = 0; j < _productRecords.length; j++){
+                inventoryPerson.inventory[index].productRecords.push(_productRecords[j]);
+            }
+    }
+    }
+
+    function processMyProduct(address _userAddress, uint256 _productIdFrom, uint256 _productIdTo, uint256 _productWeight, ProductRecord[] memory _productRecords) public {
+        Product storage productStorage = products[_productIdTo];
+        uint weight = _productWeight * productStorage.changedPercent;
+        this.addLocalInventory(_userAddress, _productIdTo, weight, _productRecords);
+        this.reductionInventory(_userAddress, _productIdFrom, _productWeight, _productRecords);
+
     }
 
 
