@@ -1,10 +1,10 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const {utils} = require("ethers")
-const { BigNumber } = require('ethers');
 
 describe("SupplyChain", function () {
   let SupplyChain;
+    const hexToDecimal = hex => Number(hex.toString());
   let supplyChain;
   const userAddress = "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2";
 
@@ -100,12 +100,11 @@ it("should reduction inventory from user", async () => {
     expect(inventoryAfter.totalWeight).to.equal(weight + additionalWeight);
     expect(inventoryAfter.productRecords.length).to.equal(2);
     const productRecords = [
-      { shipmentID: 123, weight:5, timestamp: 0 },
-      { shipmentID: 456, weight: 10, timestamp: 0},
+      { shipmentID: 123, weight:5, timestamp: inventoryAfter.productRecords.filter(e => hexToDecimal(e.shipmentID) === 123)[0].timestamp },
+      { shipmentID: 456, weight: 10, timestamp: inventoryAfter.productRecords.filter(e => hexToDecimal(e.shipmentID) === 456)[0].timestamp},
     ];
     const reduceweight = 15;
     await supplyChain.reductionInventory(userAddress, productId, reduceweight, productRecords)
-    const hexToDecimal = hex => BigNumber.from(hex).toNumber();
     const inventoryAfterReduction = await supplyChain.getInventoryByAddressAndProductID(userAddress, productId);
     expect(inventoryAfterReduction.totalWeight).to.equal(weight + additionalWeight - 15);
     expect(inventoryAfterReduction.productID).to.equal(productId);

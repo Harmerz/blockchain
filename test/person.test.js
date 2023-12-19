@@ -19,14 +19,9 @@ describe("SupplyChain", function () {
     const name = "John Doe";
     const occupation = "Software Engineer";
     const location = "Cityville";
-    try{
         await supplyChain.createPerson(userAddress, name, occupation, location);
-    } catch (e){
-        console.log(e)
-    }
 
     const person = await supplyChain.getPersonByAddress(userAddress);
-    console.log(person)
     expect(person.userAddress).to.equal(userAddress);
     expect(person.name).to.equal(name);
     expect(person.occupation).to.equal(occupation);

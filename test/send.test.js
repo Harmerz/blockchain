@@ -1,14 +1,13 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const {utils} = require("ethers")
-const { BigNumber } = require('ethers');
 
 describe("SupplyChain", function () {
   let SupplyChain;
   let supplyChain;
   const userAddress1 = "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2";
   const userAddress2 = "0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB";
-    const hexToDecimal = hex => BigNumber.from(hex).toNumber();
+    const hexToDecimal = hex => Number(hex.toString());
 
 
   beforeEach(async function () {
@@ -44,7 +43,7 @@ it("should Send Shipment with same product from user", async () => {
     // Check if the inventory was updated correctly
     expect(inventoryAfter.productID).to.equal(productId);
     expect(inventoryAfter.totalWeight).to.equal(weight + additionalWeight);
-    expect(inventoryAfter.productRecords.length).to.equal(2);
+  expect(inventoryAfter.productRecords.length).to.equal(2);
     const productRecords = [
       { shipmentID: 0, weight:5, timestamp: inventoryAfter.productRecords.filter(e => hexToDecimal(e.weight) === 100)[0].timestamp },
       { shipmentID: 0, weight: 10, timestamp: inventoryAfter.productRecords.filter(e => hexToDecimal(e.weight) === 50)[0].timestamp},
@@ -58,8 +57,6 @@ it("should Send Shipment with same product from user", async () => {
     expect(address1.totalWeight).to.equal(weight + additionalWeight - 15);
     expect(address1.productID).to.equal(productId);
     expect(address1.productRecords.length).to.equal(2);
-    console.log(address1.productRecords[0].timestamp)
-    console.log(address2)
 
     expect(address2.totalWeight).to.equal(15);
     expect(address2.productID).to.equal(productId);

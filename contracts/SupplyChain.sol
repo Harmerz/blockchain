@@ -34,6 +34,7 @@ contract SupplyChain {
         uint256 shipmentID;
         uint256 weight;
         uint256 productID;
+        uint256 timestamp;
         ProductRecord[] productRecords;
     }
 
@@ -249,6 +250,7 @@ contract SupplyChain {
         newShipment.shipmentID = nextShipmentId;
         newShipment.weight = _weight;
         newShipment.productID = _productId;
+        newShipment.timestamp = block.timestamp;
         for(uint256 i = 0; i < _productRecords.length; i++){
             newShipment.productRecords.push(_productRecords[i]);
         }
@@ -299,7 +301,7 @@ contract SupplyChain {
 
     function processMyProduct(address _userAddress, uint256 _productIdFrom, uint256 _productIdTo, uint256 _productWeight, ProductRecord[] memory _productRecords) public {
         Product storage productStorage = products[_productIdTo];
-        uint weight = _productWeight * productStorage.changedPercent;
+        uint weight = _productWeight * productStorage.changedPercent/100;
         this.addLocalInventory(_userAddress, _productIdTo, weight, _productRecords);
         this.reductionInventory(_userAddress, _productIdFrom, _productWeight, _productRecords);
 

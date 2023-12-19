@@ -10,15 +10,14 @@ describe("SupplyChain", function () {
   beforeEach(async function () {
     const SupplyChain = await ethers.getContractFactory("SupplyChain"); // Make sure to replace with your actual contract name
     supplyChainInstance = await SupplyChain.deploy();
-    await supplyChainInstance.deployed();
   });
 
   it("should add a send shipment and retrieve it by address", async function () {
     // Add send shipment
-    await supplyChainInstance.AddSendShipment(userAddress, weight, shipmentId);
+    await supplyChainInstance.addSendShipment(userAddress, weight, shipmentId);
 
     // Get send shipment by address
-    const sendShipments = await supplyChainInstance.GetSendShipmentByAddress(userAddress);
+    const sendShipments = await supplyChainInstance.getSendShipmentByAddress(userAddress);
     // Assert that the send shipment was added and retrieved correctly
     expect(sendShipments.length).to.equal(1);
     expect(sendShipments[0].shipmentID).to.equal(shipmentId);
