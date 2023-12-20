@@ -315,6 +315,10 @@ contract SupplyChain {
         this.reductionInventory(_userAddress, _productIdFrom, _productWeight, _productRecords);
 
     }
+    
+    function getShipmentById(uint256 id) external view returns (Shipment memory) {
+        return shipments[id];
+    }
 
 
     // dummy 
