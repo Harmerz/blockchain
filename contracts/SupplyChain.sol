@@ -35,7 +35,9 @@ contract SupplyChain {
         uint256 weight;
         uint256 productID;
         uint256 timestamp;
+        uint256 buyPrice;
         ProductRecord[] productRecords;
+        uint256[] shipmentRecords;
     }
 
     struct Product {
@@ -243,15 +245,22 @@ contract SupplyChain {
         }
     }
 
-    function sendShipment(address _from, address _to, uint256 _weight, uint256 _productId, ProductRecord[] memory _productRecords) external {
+    function sendShipment(address _from, address _to, uint256 _weight, uint256 _productId, uint256 _buyPrice, ProductRecord[] memory _productRecords) external {
         Shipment storage newShipment = shipments[nextShipmentId];
         newShipment.fromAddress = _from;
         newShipment.toAddress = _to;
         newShipment.shipmentID = nextShipmentId;
         newShipment.weight = _weight;
         newShipment.productID = _productId;
+        newShipment.buyPrice = _buyPrice;
         newShipment.timestamp = block.timestamp;
         for(uint256 i = 0; i < _productRecords.length; i++){
+            if(_productRecords[i].shipmentID != 0){
+            // save to before shipment
+                Shipment storage beforeShipment = shipments[_productRecords[i].shipmentID];
+
+                beforeShipment.shipmentRecords.push(nextShipmentId);
+            }
             newShipment.productRecords.push(_productRecords[i]);
         }
         this.addInventory(_to, _productId, _weight, nextShipmentId);
@@ -305,6 +314,102 @@ contract SupplyChain {
         this.addLocalInventory(_userAddress, _productIdTo, weight, _productRecords);
         this.reductionInventory(_userAddress, _productIdFrom, _productWeight, _productRecords);
 
+    }
+
+
+    // dummy 
+    function createShipment(address _from, address _to, uint256 _weight, uint256 _productId, uint256 _buyPrice, ProductRecord[] memory _productRecords) external {
+        Shipment storage newShipment = shipments[nextShipmentId];
+        newShipment.fromAddress = _from;
+        newShipment.toAddress = _to;
+        newShipment.shipmentID = nextShipmentId;
+        newShipment.weight = _weight;
+        newShipment.productID = _productId;
+        newShipment.buyPrice = _buyPrice;
+        newShipment.timestamp = block.timestamp;
+        nextShipmentId++;
+         for(uint256 i = 0; i < _productRecords.length; i++){
+            if(_productRecords[i].shipmentID != 0){
+            // save to before shipment
+                Shipment storage beforeShipment = shipments[_productRecords[i].shipmentID];
+
+                beforeShipment.shipmentRecords.push(nextShipmentId);
+            }
+            newShipment.productRecords.push(_productRecords[i]);
+        }
+    }
+
+    function getOriginProduct(uint256 startingShipmentID) external view returns (Shipment[] memory) {
+        Shipment[] memory result;
+        uint256[] memory visited;
+
+        // Start the recursion
+        getOriginProductHelper(startingShipmentID, result, visited);
+
+        return result;
+    }
+
+    function getOriginProductHelper(uint256 shipmentID, Shipment[] memory result, uint256[] memory visited) internal view {
+        // Check if the shipmentID has already been visited to avoid infinite loops
+        for (uint256 i = 0; i < visited.length; i++) {
+            if (visited[i] == shipmentID) {
+                return;
+            }
+        }
+        uint256 panjang = visited.length;
+        // Mark the current shipmentID as visited
+        visited[panjang++] = shipmentID;
+
+        // Retrieve the shipment details
+        Shipment memory currentShipment = shipments[shipmentID];
+        uint256 panjangres = result.length;
+
+        // Add the current shipment to the result array
+        result[panjangres++] = currentShipment;
+
+        // Recursively iterate through productRecords
+        for (uint256 i = 0; i < currentShipment.productRecords.length; i++) {
+            uint256 nextShipmentID = currentShipment.productRecords[i].shipmentID;
+            getOriginProductHelper(nextShipmentID, result, visited);
+        }
+    }
+
+     function getFinalProduct(uint256 startingShipmentID) external view returns (Shipment[] memory) {
+        Shipment[] memory result;
+        uint256[] memory visited;
+
+        // Start the recursion
+        getFinalProductHelper(startingShipmentID, result, visited);
+
+        return result;
+    }
+
+    function getFinalProductHelper(uint256 shipmentID, Shipment[] memory result, uint256[] memory visited) internal view {
+        // Check if the shipmentID has already been visited to avoid infinite loops
+        for (uint256 i = 0; i < visited.length; i++) {
+            if (visited[i] == shipmentID) {
+                return;
+            }
+        }
+
+        uint256 panjang = visited.length;
+        // Mark the current shipmentID as visited
+        visited[panjang++] = shipmentID;
+
+        // Retrieve the shipment details
+        uint256 panjangres = result.length;
+
+        // Retrieve the shipment details
+        Shipment memory currentShipment = shipments[shipmentID];
+
+        // Add the current shipment to the result array
+        result[panjangres++] = currentShipment;
+
+        // Recursively iterate through shipmentRecords
+        for (uint256 i = 0; i < currentShipment.shipmentRecords.length; i++) {
+            uint256 nextShipmentID = currentShipment.shipmentRecords[i];
+            getFinalProductHelper(nextShipmentID, result, visited);
+        }
     }
 
 
