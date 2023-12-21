@@ -1,5 +1,6 @@
 const ethers = require('ethers')
 require('dotenv').config()
+const Change = require('./models/change')
 const API_URL = process.env.API_URL
 const PRIVATE_KEY = process.env.PRIVATE_KEY
 const contractAddress = process.env.CONTRACT_ADDRESS
@@ -14,6 +15,19 @@ const app = express()
 app.use(express.json())
 app.use(morgan('dev'))
 const cors = require('cors')
+const mongoose = require('mongoose')
+
+// Protect against XSS attacks, should come before any routes
+mongoose.set('strictQuery', false)
+mongoose
+  .connect(process.env.DATABASE_URL)
+  .then(() => {
+    console.log('DB CONNECTED')
+  })
+  .catch((err) => {
+    console.error('UNABLE to connect to DB:', err)
+  })
+
 
 var allowedOrigins = ['https://lensights.my.id', 'http://localhost:3000']
 app.use(
@@ -217,12 +231,37 @@ app.post('/change/:address', async (req, res) => {
       newProductId,
       weight,
       productRecords
-    )
-    await tx.wait()
+      )
+      await tx.wait()
+      const date = new Date()
+      const change = new Change({
+        address: address,
+        from: productId,
+        to: newProductId,
+        totalWeight: weight,
+        timestamp: date.getTime(),
+        productRecords: productRecords
+      })
+      await change.save()
     res.json({ success: true })
   } catch (error) {
     res.status(500).send(error.message)
   }
+})
+
+
+
+app.get('/change/:address', async (req, res) => {
+    //http://localhost:3000/products/
+    try {
+        const change = await Change.find({
+            address: req.params.address,
+          })
+          if (change) res.status(200).send(change)
+          else res.status(404).send('No Data Found')
+    } catch (error) {
+      res.status(500).send(error.message)
+    }
 })
 
 app.get('/products:idbefore', async (req, res) => {
@@ -327,6 +366,7 @@ app.get('/origin/:id', async (req, res) => {
     res.status(500).send(error.message)
   }
 })
+
 
 const port = 5000
 app.listen(port, () => {
