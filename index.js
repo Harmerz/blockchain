@@ -114,7 +114,7 @@ app.get('/inventory/:address', async (req, res) => {
       description: product.description,
     }))
       const allShipment = await supplyChain.getAllShipment()
-      const shipments = allShipment.map((product) => ({
+      const shipments = allShipment.map((shipmentsLocal) => ({
         fromAddress: shipmentsLocal.fromAddress,
         toAddress: shipmentsLocal.toAddress,
         shipmentID: parseInt(shipmentsLocal.shipmentID),
@@ -180,11 +180,19 @@ app.get('/shipment/:address', async (req, res) => {
   //http://localhost:3000/products/
   try {
     const address = req.params.address
-    const shipments = await supplyChain.getSendShipmentByAddress(address)
+      const shipments = await supplyChain.getSendShipmentByAddress(address)
+      const allShipment = await supplyChain.getAllShipment()
+      const shipmentsList = allShipment.map((shipmentsLocal) => ({
+        fromAddress: shipmentsLocal.fromAddress,
+        toAddress: shipmentsLocal.toAddress,
+        shipmentID: parseInt(shipmentsLocal.shipmentID),
+        weight: parseInt(shipmentsLocal.weight),
+        productID: parseInt(shipmentsLocal.productID),
+        timestamp: parseInt(shipmentsLocal.timestamp),
+        buyPrice: parseInt(shipmentsLocal.buyPrice),
+      }))
     const myShipments = shipments.map((product) => ({
-      shipmentID: parseInt(product.shipmentID),
-      weight: parseInt(product.weight),
-      timestamp: parseInt(product.timestamp),
+        ...shipments.filter(e => e.shipmentID ===  parseInt(product.shipmentID))
     }))
     console.log(myShipments)
     res.send(myShipments)

@@ -6,6 +6,7 @@ const changeShcema = new mongoose.Schema({
   to: { type: Number },
   totalWeight: { type: Number },
   timestamp: { type: Number },
+  changePercent: { type: Number },
   productRecords: [
     {
       shipmentID: { type: Number },
