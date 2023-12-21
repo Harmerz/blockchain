@@ -35,7 +35,7 @@ app.use(
 app.get('/person/:address', async (req, res) => {
   //http://localhost:3000/products/
   try {
-    const address = req.id.address
+    const address = req.params.address
     const person = await supplyChain.getPersonByAddress(address)
 
     console.log(person)
@@ -139,10 +139,10 @@ app.get('/inventory/:address', async (req, res) => {
   }
 })
 
-app.post('/inventory/:address', async (req, res) => {
+app.post('/inventory', async (req, res) => {
   //http://localhost:3000/products/
   try {
-    const address = req.params.address
+    const address = req.body.address
     const { productId, weight, shipmentId } = req.body
     const tx = await supplyChain.addInventory(address, productId, weight, shipmentId)
     await tx.wait()
