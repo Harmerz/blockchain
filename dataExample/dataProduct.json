@@ -1,72 +1,72 @@
 [
-    {
-        "idBefore": 0,
-        "name": "Wheat Grain",
-        "changePercent": 15,
-        "type": "Cereal Crop",
-        "description": "High-quality wheat grain harvested from organic farms."
-    },
-    {
-        "idBefore": 0,
-        "name": "Tomato Varieties",
-        "changePercent": 12,
-        "type": "Vegetable",
-        "description": "Diverse collection of fresh, locally grown tomato varieties."
-    },
-    {
-        "idBefore": 0,
-        "name": "Apple Orchards",
-        "changePercent": 18,
-        "type": "Fruit",
-        "description": "Premium selection of apples sourced from well-maintained orchards."
-    },
-    {
-        "idBefore": 0,
-        "name": "Organic Spinach",
-        "changePercent": 20,
-        "type": "Leafy Green",
-        "description": "Fresh, pesticide-free spinach packed with essential nutrients."
-    },
-    {
-        "idBefore": 0,
-        "name": "Rice Harvest",
-        "changePercent": 14,
-        "type": "Grain Crop",
-        "description": "Abundant rice harvest from sustainable paddy fields."
-    },
-    {
-        "idBefore": 0,
-        "name": "Fresh Carrots",
-        "changePercent": 16,
-        "type": "Root Vegetable",
-        "description": "Locally grown carrots known for their crispness and freshness."
-    },
-    {
-        "idBefore": 0,
-        "name": "Fresh Corn",
-        "changePercent": 22,
-        "type": "Staple Crop",
-        "description": "Quality corn harvested from sustainable farms."
-    },
-    {
-        "idBefore": 0,
-        "name": "Organic Potato",
-        "changePercent": 18,
-        "type": "Tuber",
-        "description": "Naturally grown potatoes without synthetic pesticides."
-    },
-    {
-        "idBefore": 0,
-        "name": "Sunflower Seeds",
-        "changePercent": 10,
-        "type": "Oilseed Crop",
-        "description": "High-grade sunflower seeds ideal for oil extraction."
-    },
-    {
-        "idBefore": 0,
-        "name": "Juicy Oranges",
-        "changePercent": 15,
-        "type": "Citrus Fruit",
-        "description": "Fresh oranges picked from well-maintained orchards."
-    }
+  {
+    "idBefore": 0,
+    "name": "Wheat Grain",
+    "changePercent": 15,
+    "type": "Cereal Crop",
+    "description": "High-quality wheat grain harvested from organic farms."
+  },
+  {
+    "idBefore": 0,
+    "name": "Tomato Varieties",
+    "changePercent": 12,
+    "type": "Vegetable",
+    "description": "Diverse collection of fresh, locally grown tomato varieties."
+  },
+  {
+    "idBefore": 0,
+    "name": "Apple Orchards",
+    "changePercent": 18,
+    "type": "Fruit",
+    "description": "Premium selection of apples sourced from well-maintained orchards."
+  },
+  {
+    "idBefore": 0,
+    "name": "Organic Spinach",
+    "changePercent": 20,
+    "type": "Leafy Green",
+    "description": "Fresh, pesticide-free spinach packed with essential nutrients."
+  },
+  {
+    "idBefore": 0,
+    "name": "Rice Harvest",
+    "changePercent": 14,
+    "type": "Grain Crop",
+    "description": "Abundant rice harvest from sustainable paddy fields."
+  },
+  {
+    "idBefore": 0,
+    "name": "Fresh Carrots",
+    "changePercent": 16,
+    "type": "Root Vegetable",
+    "description": "Locally grown carrots known for their crispness and freshness."
+  },
+  {
+    "idBefore": 0,
+    "name": "Fresh Corn",
+    "changePercent": 22,
+    "type": "Staple Crop",
+    "description": "Quality corn harvested from sustainable farms."
+  },
+  {
+    "idBefore": 0,
+    "name": "Organic Potato",
+    "changePercent": 18,
+    "type": "Tuber",
+    "description": "Naturally grown potatoes without synthetic pesticides."
+  },
+  {
+    "idBefore": 0,
+    "name": "Sunflower Seeds",
+    "changePercent": 10,
+    "type": "Oilseed Crop",
+    "description": "High-grade sunflower seeds ideal for oil extraction."
+  },
+  {
+    "idBefore": 0,
+    "name": "Juicy Oranges",
+    "changePercent": 15,
+    "type": "Citrus Fruit",
+    "description": "Fresh oranges picked from well-maintained orchards."
+  }
 ]
