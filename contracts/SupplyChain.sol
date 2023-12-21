@@ -315,7 +315,17 @@ contract SupplyChain {
         this.reductionInventory(_userAddress, _productIdFrom, _productWeight, _productRecords);
 
     }
-    
+
+    function getAllShipment() external view returns (Shipment[] memory) {
+         Shipment[] memory allShipments = new Shipment[](nextShipmentId - 1);
+
+        for (uint256 i = 1; i < nextShipmentId; i++) {
+            allShipments[i - 1] = shipments[i];
+        }
+
+        return allShipments;
+    }
+
     function getShipmentById(uint256 id) external view returns (Shipment memory) {
         return shipments[id];
     }

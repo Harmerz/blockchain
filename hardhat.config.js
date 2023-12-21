@@ -2,35 +2,34 @@
  * @type import('hardhat/config').HardhatUserConfig
  */
 
-require("@nomiclabs/hardhat-waffle");
-require('dotenv').config();
+require('@nomiclabs/hardhat-waffle')
+require('dotenv').config()
 
 module.exports = {
-  defaultNetwork: "sepolia",
+  defaultNetwork: 'sepolia',
   networks: {
-    hardhat: {
-    },
+    hardhat: {},
     sepolia: {
       url: process.env.HTTPS_ETHEREUM,
-      accounts: [process.env.PRIVATE_KEY]
-    }
+      accounts: [process.env.PRIVATE_KEY],
+    },
   },
   solidity: {
-    version: "0.8.3",
+    version: '0.8.3',
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200
-      }
-    }
+        runs: 200,
+      },
+    },
   },
   paths: {
-    sources: "./contracts",
-    tests: "./test",
-    cache: "./cache",
-    artifacts: "./artifacts"
+    sources: './contracts',
+    tests: './test',
+    cache: './cache',
+    artifacts: './artifacts',
   },
   mocha: {
-    timeout: 40000
-  }
+    timeout: 40000,
+  },
 }
