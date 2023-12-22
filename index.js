@@ -395,7 +395,6 @@ app.get('/final/:address', async (req, res) => {
       }
     }));
   
-    console.log(myShipments)
     res.send(myShipments)
   } catch (error) {
     console.error("Error in main code:", error);
@@ -462,7 +461,6 @@ app.get('/origin/:address', async (req, res) => {
           // Assuming products is an array
           ...(products.find((e) => e.productID == shipmentsLocal.productID) || {}),
         })
-        console.log(myShipments)
 
         // Recursively call getAllShipment for each productRecord
         if (shipmentsLocal.productRecords && shipmentsLocal.productRecords.length > 0) {
@@ -476,7 +474,6 @@ app.get('/origin/:address', async (req, res) => {
         }
       }));
 
-    console.log(myShipments)
     res.send(myShipments)
   } catch (error) {
     res.status(500).send(error.message)
@@ -491,7 +488,6 @@ app.post('/contacts', async (req, res) => {
     const user = await Contact.findOne({
       account: account,
     })
-    console.log(req.body)
     if (user) {
       await Contact.updateOne(
         {
@@ -513,7 +509,6 @@ app.post('/contacts', async (req, res) => {
           
         ],
       })
-        console.log(newContact)
       await newContact.save()
     }
     res.status(201).json(contact)
