@@ -61,7 +61,7 @@ contract SupplyChain {
         uint8 _changedPercent,
         string memory _type,
         string memory _description
-    ) external {
+    ) public {
         Product memory newProduct = Product({
             productID: nextProductId,
             idBefore: _idBefore,
@@ -83,7 +83,7 @@ contract SupplyChain {
         uint8 _changedPercent,
         string memory _type,
         string memory _description
-    ) external {
+    ) public {
         require(_productId > 0 && _productId < nextProductId, "Invalid product ID");
 
         Product storage productToUpdate = products[_productId];
@@ -94,7 +94,7 @@ contract SupplyChain {
         productToUpdate.description = _description;
     }
 
-    function getAllProducts() external view returns (Product[] memory) {
+    function getAllProducts() public view returns (Product[] memory) {
         Product[] memory allProducts = new Product[](nextProductId - 1);
 
         for (uint256 i = 1; i < nextProductId; i++) {
@@ -104,7 +104,7 @@ contract SupplyChain {
         return allProducts;
     }
 
-    function getProductById(uint256 _productId) external view returns (Product memory) {
+    function getProductById(uint256 _productId) public view returns (Product memory) {
         require(_productId > 0 && _productId < nextProductId, "Invalid product ID");
         return products[_productId];
     }
@@ -126,12 +126,12 @@ contract SupplyChain {
 
     }
 
-    function getPersonByAddress(address _userAddress) external view returns (Person memory) {
+    function getPersonByAddress(address _userAddress) public view returns (Person memory) {
         return people[_userAddress];
     }
 
     // Inventory
-   function addInventory(address _userAddress, uint256 _productId, uint256 _weight, uint256 _shipmentId) external {
+   function addInventory(address _userAddress, uint256 _productId, uint256 _weight, uint256 _shipmentId) public {
     bool find = false;
     Person storage inventoryPerson = people[_userAddress];
 
@@ -184,10 +184,10 @@ contract SupplyChain {
 }
 
 
-    function getInventoryByAddress(address _userAddress) external view returns (Inventory[] memory) {
+    function getInventoryByAddress(address _userAddress) public view returns (Inventory[] memory) {
         return people[_userAddress].inventory;
     }
-    function getInventoryByAddressAndProductID(address _userAddress, uint256 _productID) external view returns (Inventory memory) {
+    function getInventoryByAddressAndProductID(address _userAddress, uint256 _productID) public view returns (Inventory memory) {
         Person storage inventoryPerson = people[_userAddress];
         bool find = false;
         for (uint i = 0; i < inventoryPerson.inventory.length; i++) {
@@ -200,7 +200,7 @@ contract SupplyChain {
        return people[_userAddress].inventory[0];
     }
 
-    function addSendShipment(address _userAddress, uint256 _weight, uint256 _shipmentId) external {
+    function addSendShipment(address _userAddress, uint256 _weight, uint256 _shipmentId) public {
         Person storage sendShipmentPerson = people[_userAddress]; 
         ProductRecord memory newProductRecord = ProductRecord({
             shipmentID: _shipmentId,
@@ -212,10 +212,10 @@ contract SupplyChain {
         sendShipmentPerson.sendShipment[index] = newProductRecord;
     }
 
-    function getSendShipmentByAddress(address _userAddress) external view returns (ProductRecord[] memory)  {
+    function getSendShipmentByAddress(address _userAddress) public view returns (ProductRecord[] memory)  {
         return people[_userAddress].sendShipment; 
     }
-    function reductionInventory(address _userAddress, uint256 _productId, uint256 _weight, ProductRecord[] memory _productRecords) external {
+    function reductionInventory(address _userAddress, uint256 _productId, uint256 _weight, ProductRecord[] memory _productRecords) public {
         Person storage inventoryPerson = people[_userAddress];
 
 
@@ -245,7 +245,7 @@ contract SupplyChain {
         }
     }
 
-    function sendShipment(address _from, address _to, uint256 _weight, uint256 _productId, uint256 _buyPrice, ProductRecord[] memory _productRecords) external {
+    function sendShipment(address _from, address _to, uint256 _weight, uint256 _productId, uint256 _buyPrice, ProductRecord[] memory _productRecords) public {
         Shipment storage newShipment = shipments[nextShipmentId];
         newShipment.fromAddress = _from;
         newShipment.toAddress = _to;
@@ -269,7 +269,7 @@ contract SupplyChain {
         nextShipmentId++;
     }
 
-    function addLocalInventory(address _userAddress, uint256 _productId, uint256 _weight, ProductRecord[] memory _productRecords) external {
+    function addLocalInventory(address _userAddress, uint256 _productId, uint256 _weight, ProductRecord[] memory _productRecords) public {
         bool find = false;
     Person storage inventoryPerson = people[_userAddress];
 
@@ -316,7 +316,7 @@ contract SupplyChain {
 
     }
 
-    function getAllShipment() external view returns (Shipment[] memory) {
+    function getAllShipment() public view returns (Shipment[] memory) {
          Shipment[] memory allShipments = new Shipment[](nextShipmentId - 1);
 
         for (uint256 i = 1; i < nextShipmentId; i++) {
@@ -326,13 +326,13 @@ contract SupplyChain {
         return allShipments;
     }
 
-    function getShipmentById(uint256 id) external view returns (Shipment memory) {
+    function getShipmentById(uint256 id) public view returns (Shipment memory) {
         return shipments[id];
     }
 
 
     // dummy 
-    function createShipment(address _from, address _to, uint256 _weight, uint256 _productId, uint256 _buyPrice, ProductRecord[] memory _productRecords) external {
+    function createShipment(address _from, address _to, uint256 _weight, uint256 _productId, uint256 _buyPrice, ProductRecord[] memory _productRecords) public {
         Shipment storage newShipment = shipments[nextShipmentId];
         newShipment.fromAddress = _from;
         newShipment.toAddress = _to;
@@ -353,7 +353,7 @@ contract SupplyChain {
         }
     }
 
-    function getOriginProduct(uint256 startingShipmentID) external view returns (Shipment[] memory) {
+    function getOriginProduct(uint256 startingShipmentID) public view returns (Shipment[] memory) {
         Shipment[] memory result;
         uint256[] memory visited;
 
@@ -388,7 +388,7 @@ contract SupplyChain {
         }
     }
 
-     function getFinalProduct(uint256 startingShipmentID) external view returns (Shipment[] memory) {
+     function getFinalProduct(uint256 startingShipmentID) public view returns (Shipment[] memory) {
         Shipment[] memory result;
         uint256[] memory visited;
 
